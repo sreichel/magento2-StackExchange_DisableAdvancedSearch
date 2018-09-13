@@ -2,9 +2,9 @@
 /**
  * SR-Module
  *
- * @author      Sven Reichel <github-sr@hotmail.com>
- * @category    StackExchange
- * @package     StackExchange_DisableAdvancedSearch
+ * @author   Sven Reichel <github-sr@hotmail.com>
+ * @category StackExchange
+ * @package  StackExchange_DisableAdvancedSearch
  */
 
 /**
@@ -20,31 +20,38 @@ use Magento\Store\Model\ScopeInterface;
 
 class DisableAdvancedSearch implements ObserverInterface
 {
+    const CONFIG_ADVANCED_SEARCH_ENABLE = 'catalog/search/enable_advanced_search';
+
+    const CONFIG_DEFAULT_NO_ROUTE = 'web/default/cms_no_route';
+
     /**
      * @var ScopeConfigInterface
      */
-    protected $_scopeConfigInterface;
-    protected $urlBuilder;
+    public $scopeConfigInterface;
+
+    /**
+     * @var UrlInterface
+     */
+    public $urlBuilder;
 
     public function __construct(
         ScopeConfigInterface $configScopeConfigInterface,
         UrlInterface $urlInterface
-    )
-    {
-        $this->_scopeConfigInterface = $configScopeConfigInterface;
+    ) {
+        $this->scopeConfigInterface = $configScopeConfigInterface;
         $this->urlBuilder = $urlInterface;
     }
 
     /**
      * Disable Advanced Search at storeview scope
      *
-     * @param Observer $observer
+     * @param  Observer $observer
      * @return void
      */
     public function execute(Observer $observer)
     {
-        if (!$this->_scopeConfigInterface->isSetFlag('catalog/search/enable_advanced_search', ScopeInterface::SCOPE_STORE)) {
-            $path = $this->_scopeConfigInterface->getValue('web/default/cms_no_route', ScopeInterface::SCOPE_STORE);
+        if (!$this->scopeConfigInterface->isSetFlag(self::CONFIG_ADVANCED_SEARCH_ENABLE, ScopeInterface::SCOPE_STORE)) {
+            $path = $this->scopeConfigInterface->getValue(self::CONFIG_DEFAULT_NO_ROUTE, ScopeInterface::SCOPE_STORE);
             $observer->getControllerAction()->getResponse()->setRedirect($this->urlBuilder->getUrl($path));
         }
     }
