@@ -18,6 +18,10 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\ScopeInterface;
 
+/**
+ * Class DisableAdvancedSearch
+ * @package StackExchange\DisableAdvancedSearch\Observer
+ */
 class DisableAdvancedSearch implements ObserverInterface
 {
     const CONFIG_ADVANCED_SEARCH_ENABLE = 'catalog/search/enable_advanced_search';
@@ -27,18 +31,18 @@ class DisableAdvancedSearch implements ObserverInterface
     /**
      * @var ScopeConfigInterface
      */
-    public $scopeConfigInterface;
+    protected $scopeConfigInterface;
 
     /**
      * @var UrlInterface
      */
-    public $urlBuilder;
+    protected $urlBuilder;
 
     public function __construct(
-        ScopeConfigInterface $configScopeConfigInterface,
+        ScopeConfigInterface $scopeConfigInterface,
         UrlInterface $urlInterface
     ) {
-        $this->scopeConfigInterface = $configScopeConfigInterface;
+        $this->scopeConfigInterface = $scopeConfigInterface;
         $this->urlBuilder = $urlInterface;
     }
 
