@@ -1,22 +1,20 @@
 <?php
 /**
- * SR-Module
+ * Magento2-Module
  *
  * @author   Sven Reichel <github-sr@hotmail.com>
  * @category StackExchange
  * @package  StackExchange_DisableAdvancedSearch
  */
 
-/**
- * Observer Model
- */
+declare(strict_types=1);
+
 namespace StackExchange\DisableAdvancedSearch\Observer;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\UrlInterface;
-use Magento\Store\Model\ScopeInterface;
+use StackExchange\DisableAdvancedSearch\Helper\Data as Helper;
 
 /**
  * Class DisableAdvancedSearch
@@ -24,26 +22,27 @@ use Magento\Store\Model\ScopeInterface;
  */
 class DisableAdvancedSearch implements ObserverInterface
 {
-    const CONFIG_ADVANCED_SEARCH_ENABLE = 'catalog/search/enable_advanced_search';
-
-    const CONFIG_DEFAULT_NO_ROUTE = 'web/default/cms_no_route';
-
     /**
-     * @var ScopeConfigInterface
+     * @var Helper
      */
-    protected $scopeConfigInterface;
+    protected $helper;
 
     /**
      * @var UrlInterface
      */
     protected $urlBuilder;
 
+    /**
+     * DisableAdvancedSearch constructor.
+     * @param Helper $helper
+     * @param UrlInterface $urlBuilder
+     */
     public function __construct(
-        ScopeConfigInterface $scopeConfigInterface,
-        UrlInterface $urlInterface
+        Helper $helper,
+        UrlInterface $urlBuilder
     ) {
-        $this->scopeConfigInterface = $scopeConfigInterface;
-        $this->urlBuilder = $urlInterface;
+        $this->helper = $helper;
+        $this->urlBuilder = $urlBuilder;
     }
 
     /**
@@ -52,11 +51,13 @@ class DisableAdvancedSearch implements ObserverInterface
      * @param  Observer $observer
      * @return void
      */
-    public function execute(Observer $observer)
+    public function execute(Observer $observer): void
     {
-        if (!$this->scopeConfigInterface->isSetFlag(self::CONFIG_ADVANCED_SEARCH_ENABLE, ScopeInterface::SCOPE_STORE)) {
-            $path = $this->scopeConfigInterface->getValue(self::CONFIG_DEFAULT_NO_ROUTE, ScopeInterface::SCOPE_STORE);
-            $observer->getControllerAction()->getResponse()->setRedirect($this->urlBuilder->getUrl($path));
+        $path = $this->helper->getRedirectPath();
+        if ($path) {
+            $observer->getControllerAction()
+                ->getResponse()
+                ->setRedirect($this->urlBuilder->getUrl($path));
         }
     }
 }
